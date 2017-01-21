@@ -41,7 +41,7 @@
 			max-width:20px;max-height:20px;
 			z-index:998;
 		}
-		#person {
+		#player {
 			border-radius:19px;
 		}
 		@keyframes animate {
@@ -67,13 +67,14 @@
 <!--	<form>
 		<input id="name" style="" placeholder="choose a name.." name="nickname"></input>
 	</form> -->
-	<img id="person" class="entity" src="right.gif">
+	<img id="player" class="entity" src="right.gif">
 	<div id="container"/>
 	<script>
 		const m = 40;
 		const cookieM = 20;
 		var
-			container = document.getElementById("container") 
+			container = document.getElementById("container")
+		, player = document.getElementById("player")
 		, vw = getViewport(window)
 		, width = parseInt(vw[0] / 40) * 40 - 200
 		, height = parseInt(vw[1] / 40) * 40 - 200 	
@@ -86,8 +87,8 @@
 		, contEndY = getCurrXY(container, "bottom")
 		, contEndX = getCurrXY(container, "right")
 		;
-		person.style.top = contStartY + 41;
-		person.style.left = contStartX + 41;
+		player.style.top = contStartY + 41;
+		player.style.left = contStartX + 41;
 
 		var
 			cookie = spawnCookie()
@@ -100,23 +101,22 @@
 
 		function movePlayer(e) {
 			var
-			  img = document.getElementById("person")
+			  player = document.getElementById("player")
 			, a = m
 			, b = m * (-1)
 			;	
-			console.log(isInField(img));
 			if (e.keyCode === 37) {
-				img.src = "left.gif";
-				elementToPosition(img, b, 0);
+				player.src = "left.gif";
+				elementToPosition(player, b, 0);
 			} else if(e.keyCode === 39) {
-				img.src = "right.gif";
-				elementToPosition(img, a, 0);
+				player.src = "right.gif";
+				elementToPosition(player, a, 0);
 			} else if(e.keyCode === 38) {
-				img.src ="up.gif";
-				elementToPosition(img, 0, b);
+				player.src ="up.gif";
+				elementToPosition(player, 0, b);
 			} else if(e.keyCode === 40) {
-				img.src = "down.gif";
-				elementToPosition(img, 0, a);
+				player.src = "down.gif";
+				elementToPosition(player, 0, a);
 			}
 		}
 
@@ -185,7 +185,7 @@
 			, cookieStartX = 1
 			, cookieStartY = 1
 			;
-			console.log("hi")
+
 			while (isInField(undefined, cookieM, cookieM, cookieStartX, cookieStartY) === false) {
 				cookieStartX = getRandom(contStartX, contEndX);
 				cookieStartY = getRandom(contStartY, contEndY);
@@ -196,7 +196,6 @@
 			cookie.style.top = cookieStartY;
 			cookie.style.left = cookieStartX;
 
-			console.log(isInField(cookie));
 			return cookie;
 		}
 
@@ -247,7 +246,7 @@
 			;
 
 			for (i = 0; i < length; i++) {
-				if (elementCollision(document.getElementById("person"), items[i])) {
+				if (elementCollision(player, items[i])) {
 					if ((items[i].className).indexOf("cookie") >= -1) {
 						container.removeChild(items[i]);
 						spawnCookie();
