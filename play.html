@@ -41,7 +41,7 @@
 			max-width:20px;max-height:20px;
 			z-index:998;
 		}
-		#player {
+		.player {
 			border-radius:19px;
 		}
 		@keyframes animate {
@@ -64,14 +64,12 @@
 </head>
 <body>
 	<h1>LETS GO</h1>
-	<img id="player" class="entity" src="right.gif">
 	<div id="container"/>
 	<script>
 		const m = 40;
 		const cookieM = 20;
 		var
 			container = document.getElementById("container")
-		, player = document.getElementById("player")
 		, vw = getViewport(window)
 		, width = parseInt(vw[0] / 40) * 40 - 200
 		, height = parseInt(vw[1] / 40) * 40 - 200 	
@@ -84,11 +82,12 @@
 		, contEndY = getCurrXY(container, "bottom")
 		, contEndX = getCurrXY(container, "right")
 		;
-		player.style.top = contStartY + 41;
-		player.style.left = contStartX + 41;
+		//player.style.top = contStartY + 41;
+		//player.style.left = contStartX + 41;
 
 		var
 			cookie = spawnCookie()
+		, player = spawnPlayer()
 		;
 
 		(function() {
@@ -98,21 +97,20 @@
 
 		function movePlayer(e) {
 			var
-			  player = document.getElementById("player")
-			, a = m
+			  a = m
 			, b = m * (-1)
 			;	
 			if (e.keyCode === 37) {
-				player.src = "left.gif";
+				player.src = "images/left.gif";
 				elementToPosition(player, b, 0);
 			} else if(e.keyCode === 39) {
-				player.src = "right.gif";
+				player.src = "images/right.gif";
 				elementToPosition(player, a, 0);
 			} else if(e.keyCode === 38) {
-				player.src ="up.gif";
+				player.src ="images/up.gif";
 				elementToPosition(player, 0, b);
 			} else if(e.keyCode === 40) {
-				player.src = "down.gif";
+				player.src = "images/down.gif";
 				elementToPosition(player, 0, a);
 			}
 		}
@@ -121,17 +119,17 @@
 			return parseInt(el.getBoundingClientRect()[direction]);
 		}
 
-		function elementToPosition(el, x, y) {
+		function elementToPosition(el, xAdd, yAdd) {
 			var
 			  left = getCurrXY(el, "left")
 			, top = getCurrXY(el, "top")
 			;
-			if (isInField(el, x, y) === true) {
+			if (isInField(el, xAdd, yAdd) === true) {
 				/* currentx + x = new x */
-				el.style.left = (left + x) + "px";
+				el.style.left = (left + xAdd) + "px";
 			}
-			if (isInField(el, x, y) === true) {
-				el.style.top = (top + y) + "px";
+			if (isInField(el, xAdd, yAdd) === true) {
+				el.style.top = (top + yAdd) + "px";
 			}
 		}
 
@@ -181,13 +179,37 @@
 				cookieStartX = getRandom(contStartX, contEndX);
 				cookieStartY = getRandom(contStartY, contEndY);
 			}
-			cookie.src = "cookie.png";
+			console.log("Cookie position: ", cookieStartY, cookieStartX)
+			cookie.src = "images/cookie.png";
 			cookie.setAttribute("class", "smallEntity cookie");
 			container.appendChild(cookie);
 			cookie.style.top = cookieStartY;
 			cookie.style.left = cookieStartX;
 
 			return cookie;
+		}
+
+		function spawnPlayer() {
+			var
+			  player = document.createElement("img")
+			, spawnPlaces = [
+				  [contStartX + 41, contStartY + 41, "right.gif"]
+			  , [contEndX - 81, contStartY + 41, "left.gif"]
+			  , [contStartX + 41, contEndY - 81, "right.gif"]
+			  , [contEndX - 81, contEndY - 81, "left.gif"]
+			  ]
+			, spawnPos = getRandom(0, 3)
+			;
+			console.log(spawnPos)
+			
+			player.src = "images/" + spawnPlaces[spawnPos][2];
+			player.setAttribute("class", "entity player");
+			container.appendChild(player);
+			// 0 == x , 1 == y, 2 == imageSrc, spawnpos 0,1,2,3 
+			player.style.left = spawnPlaces[spawnPos][0];
+			player.style.top = spawnPlaces[spawnPos][1];
+			console.log(player.offsetWidth, player.offsetHeight);
+			return player;
 		}
 
 		/**
