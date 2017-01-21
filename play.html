@@ -71,6 +71,8 @@
 		var
 		  playerData = {
 		  	name : JSON.parse(localStorage.getItem("playerName")) || undefined
+		  , location : {} 
+		  , direction : ""
 		  }
 		, container = document.getElementById("container")
 		, vw = getViewport(window)
@@ -85,8 +87,7 @@
 		, contEndY = getCurrXY(container, "bottom")
 		, contEndX = getCurrXY(container, "right")
 		;
-		//player.style.top = contStartY + 41;
-		//player.style.left = contStartX + 41;
+
 		if (typeof playerData.name === "undefined") {
 			window.location.href = "index.html";
 		}
@@ -94,6 +95,8 @@
 			cookie = spawnCookie()
 		, player = spawnPlayer()
 		;
+
+		//connectionTimer(20);
 
 		(function() {
 			window.addEventListener("keydown", movePlayer);
@@ -198,23 +201,35 @@
 			var
 			  player = document.createElement("img")
 			, spawnPlaces = [
-				  [contStartX + 41, contStartY + 41, "right.gif"]
-			  , [contEndX - 81, contStartY + 41, "left.gif"]
-			  , [contStartX + 41, contEndY - 81, "right.gif"]
-			  , [contEndX - 81, contEndY - 81, "left.gif"]
+				  [contStartX + 41, contStartY + 41, "right"]
+			  , [contEndX - 81, contStartY + 41, "left"]
+			  , [contStartX + 41, contEndY - 81, "right"]
+			  , [contEndX - 81, contEndY - 81, "left"]
 			  ]
 			, spawnPos = getRandom(0, 3)
+			// 0 == x , 1 == y, 2 == imageSrc, spawnpos 0,1,2,3
+			, left = spawnPlaces[spawnPos][0]
+			, top = spawnPlaces[spawnPos][1]
+			, direction = spawnPlaces[spawnPos][2]
 			;
 			console.log(spawnPos)
 			
-			player.src = "images/" + spawnPlaces[spawnPos][2];
+			player.src = "images/" + direction + ".gif";
 			player.setAttribute("class", "entity player");
 			container.appendChild(player);
-			// 0 == x , 1 == y, 2 == imageSrc, spawnpos 0,1,2,3 
-			player.style.left = spawnPlaces[spawnPos][0];
-			player.style.top = spawnPlaces[spawnPos][1];
-			console.log(player.offsetWidth, player.offsetHeight);
+
+			/* safe spawn data to json */
+			playerData.location = getPositionData(player);
+			playerData.direction = direction;
+
+			player.style.left = left;
+			player.style.top = top;
+			console.log("player xy: ", left, top);
 			return player;
+		}
+
+		function sendAndReceiveData(data) {
+
 		}
 
 		/**
@@ -271,6 +286,15 @@
 					}
 				}
 			}
+		}
+
+		function connectionTimer(time) {
+			var
+				interval = setInterval(function() {
+					console.log("..");
+					sendAndReceiveData(playerData);
+				}, time);
+			;
 		}
 	</script>
 </body>
