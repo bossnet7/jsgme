@@ -77,16 +77,21 @@
 		, container = document.getElementById("container")
 		, vw = getViewport(window)
 		, width = parseInt(vw[0] / 40) * 40 - 200
-		, height = parseInt(vw[1] / 40) * 40 - 200 	
+		, height = parseInt(vw[1] / 40) * 40 - 200
+		, containerData = []
+		, contStartY = 0
+		, contStartX = 0
+		, contEndY = 0
+		, contEndX = 0
 		;
 		container.style.width = width;
 		container.style.height = height;
-		var
-		  contStartY = getCurrXY(container, "top")
-		, contStartX = getCurrXY(container, "left")
-		, contEndY = getCurrXY(container, "bottom")
-		, contEndX = getCurrXY(container, "right")
-		;
+
+		containerData = getPositionData(container);
+		contStartY = containerData["top"];
+		contStartX = containerData["left"];
+		contEndY = containerData["bottom"];
+		contEndX = containerData["right"];
 
 		if (typeof playerData.name === "undefined") {
 			window.location.href = "index.html";
