@@ -56,9 +56,19 @@
 		<h1>Jogis Trollgame</h1>
 	</header>
 	<div id="main">
-		<form action="play.html">
-			<input id="name" style="" placeholder="choose a name.." name="nickname"></input>
-		</form>
+		<input id="name" style="" placeholder="choose a name.." name="nickname"></input>
+
 	</div>
+	<script>
+		var
+		  input = document.getElementById("name")
+		;
+		window.addEventListener("keydown", function(e) {
+			if (event.which == 13 || event.keyCode == 13) {
+				localStorage.setItem("playerName", JSON.stringify(input.value));
+				window.location.href = "play.html"
+			}
+		})
+	</script>
 </body>
 </html>
