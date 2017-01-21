@@ -1,0 +1,250 @@
+<html>
+<head>
+	<script src="https://use.fontawesome.com/c933242305.js"></script>
+	<title>Internetti - the Game</title>
+	<style>
+		body {
+			text-align:center;
+			background-color:black;
+			margin:0;
+		}
+		#name {
+			border:4px solid #a4a17f;
+			border-radius:10px;
+			width:300px;
+			height:40px;
+			text-align:center;
+			font-size:18px;
+		}
+		form {
+			display:inline;
+		}
+		h1 {
+			display:inline;
+			position:absolute;
+			color:#0c8e05;
+			top:20px;
+			left:10vw;
+			font-family: cursive;
+
+			-webkit-animation: animate 10s 1;
+			animation: animate 9s 1;
+		}
+		.entity {
+			position:absolute;
+			max-width:40px;max-height:40px;
+			z-index:999;
+		}
+		.smallEntity {
+			position:absolute;
+			border-radius:10px;
+			max-width:20px;max-height:20px;
+			z-index:998;
+		}
+		#player {
+			border-radius:19px;
+		}
+		@keyframes animate {
+			0% {transform: rotate(0deg);left:10vw;color:#d8db1a;}
+			10% {transform: rotate(20deg);left:10vw;}
+			20% {transform: rotate(-14deg);left:80vw;color:#cc1818;}
+			25% {transform: rotate(2deg);left:80vw;}
+			66% {transform: rotate(-390deg);left:10vw;color:#0c8e05;}
+			90% {transform: rotate(-350deg);left:10vw;color:#0c8e05;}
+			100% {transform: rotate(-360deg);left:10vw;color:#0c8e05;}
+		}
+		#container {
+			border:2px dotted black;
+			margin:auto;
+			margin-top:100px;
+			background-color:#70cc85;
+		}
+	}
+	</style>
+</head>
+<body>
+	<h1>LETS GO</h1>
+	<img id="player" class="entity" src="right.gif">
+	<div id="container"/>
+	<script>
+		const m = 40;
+		const cookieM = 20;
+		var
+			container = document.getElementById("container")
+		, player = document.getElementById("player")
+		, vw = getViewport(window)
+		, width = parseInt(vw[0] / 40) * 40 - 200
+		, height = parseInt(vw[1] / 40) * 40 - 200 	
+		;
+		container.style.width = width;
+		container.style.height = height;
+		var
+		  contStartY = getCurrXY(container, "top")
+		, contStartX = getCurrXY(container, "left")
+		, contEndY = getCurrXY(container, "bottom")
+		, contEndX = getCurrXY(container, "right")
+		;
+		player.style.top = contStartY + 41;
+		player.style.left = contStartX + 41;
+
+		var
+			cookie = spawnCookie()
+		;
+
+		(function() {
+			window.addEventListener("keydown", movePlayer);
+			window.addEventListener("keydown", checkCookieCollision);
+		})();
+
+		function movePlayer(e) {
+			var
+			  player = document.getElementById("player")
+			, a = m
+			, b = m * (-1)
+			;	
+			if (e.keyCode === 37) {
+				player.src = "left.gif";
+				elementToPosition(player, b, 0);
+			} else if(e.keyCode === 39) {
+				player.src = "right.gif";
+				elementToPosition(player, a, 0);
+			} else if(e.keyCode === 38) {
+				player.src ="up.gif";
+				elementToPosition(player, 0, b);
+			} else if(e.keyCode === 40) {
+				player.src = "down.gif";
+				elementToPosition(player, 0, a);
+			}
+		}
+
+		function getCurrXY(el, direction) {
+			return parseInt(el.getBoundingClientRect()[direction]);
+		}
+
+		function elementToPosition(el, x, y) {
+			var
+			  left = getCurrXY(el, "left")
+			, top = getCurrXY(el, "top")
+			;
+			if (isInField(el, x, y) === true) {
+				/* currentx + x = new x */
+				el.style.left = (left + x) + "px";
+			}
+			if (isInField(el, x, y) === true) {
+				el.style.top = (top + y) + "px";
+			}
+		}
+
+		function getPositionData(el) {
+			var
+			  arr = ["top", "left", "right", "bottom"]
+			, obj = {}
+			;
+			arr.forEach(function(e) {
+				obj[e] = el.getBoundingClientRect()[e];
+			})
+
+			obj["width"] = el.offsetWidth;
+			obj["height"] = el.offsetHeight;
+
+			return obj;
+		}
+
+		function getViewport(obj) {
+
+		  var 
+		    viewPortWidth
+		  , viewPortHeight
+		  ;
+
+		 // the more standards compliant browsers (mozilla/netscape/opera/IE7) use window.innerWidth and window.innerHeight
+			if (typeof obj.innerWidth != 'undefined') {
+			  viewPortWidth = obj.innerWidth,
+			  viewPortHeight = obj.innerHeight
+			}
+			return [viewPortWidth, viewPortHeight];
+		}
+
+		function getRandom(min, max)
+		{
+		    return Math.floor(Math.random() * (max - min + 1) + min);
+		}
+
+		function spawnCookie() {
+			var
+			  cookie = document.createElement("img")
+			, cookieStartX = 1
+			, cookieStartY = 1
+			;
+
+			while (isInField(undefined, cookieM, cookieM, cookieStartX, cookieStartY) === false) {
+				cookieStartX = getRandom(contStartX, contEndX);
+				cookieStartY = getRandom(contStartY, contEndY);
+			}
+			cookie.src = "cookie.png";
+			cookie.setAttribute("class", "smallEntity cookie");
+			container.appendChild(cookie);
+			cookie.style.top = cookieStartY;
+			cookie.style.left = cookieStartX;
+
+			return cookie;
+		}
+
+		/**
+		 * x & y optionale werte 
+		 * werden derzeitiem wert hinzuaddiert
+		 */
+		function isInField(el, xAdd, yAdd, x, y) {
+			var
+			  left = x || getCurrXY(el, "left")
+			, top = y || getCurrXY(el, "top")
+			, right = x + xAdd || getCurrXY(el, "right")
+			, bottom = y + yAdd || getCurrXY(el, "bottom");
+			;
+			if (typeof xAdd !== "undefined" && typeof yAdd !== "undefined") {
+				left += xAdd;
+				right += xAdd;
+				top += yAdd;
+				bottom += yAdd;
+			}
+			if (left > contStartX && right < contEndX && top > contStartY && bottom < contEndY) {
+				return true;
+			}
+
+			return false;
+		}
+
+		function elementCollision(el1, el2) {
+			var
+				el1 = getPositionData(el1)
+			, el2 = getPositionData(el2)
+			;
+			if (el1.left < el2.left + el2.width &&
+			   el1.left + el1.width > el2.left &&
+			   el1.top < el2.top + el2.height &&
+			   el1.height + el1.top > el2.top) {
+				return true;
+			}
+
+			return false;
+		}
+
+		function checkCookieCollision(ev) {
+			var
+			  items = document.getElementsByClassName("smallEntity")
+			, length = items.length
+			, i = 0
+			;
+
+			for (i = 0; i < length; i++) {
+				if (elementCollision(player, items[i])) {
+					if ((items[i].className).indexOf("cookie") >= -1) {
+						container.removeChild(items[i]);
+						spawnCookie();
+					}
+				}
+			}
+		}
+	</script>
+</body>
+</html>
