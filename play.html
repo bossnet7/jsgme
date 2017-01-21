@@ -93,7 +93,7 @@
 		}
 		var
 			cookie = spawnCookie()
-		, player = spawnPlayer()
+		, player = spawnPlayer(playerData)
 		;
 
 		//connectionTimer(20);
@@ -111,15 +111,19 @@
 			if (e.keyCode === 37) {
 				player.src = "images/left.gif";
 				elementToPosition(player, b, 0);
+				playerData.direction = "left"; 
 			} else if(e.keyCode === 39) {
 				player.src = "images/right.gif";
 				elementToPosition(player, a, 0);
+				playerData.direction = "right";
 			} else if(e.keyCode === 38) {
-				player.src ="images/up.gif";
+				player.src ="images/top.gif";
 				elementToPosition(player, 0, b);
+				playerData.direction = "top";
 			} else if(e.keyCode === 40) {
-				player.src = "images/down.gif";
+				player.src = "images/bottom.gif";
 				elementToPosition(player, 0, a);
+				playerData.direction = "bottom";
 			}
 		}
 
@@ -187,7 +191,7 @@
 				cookieStartX = getRandom(contStartX, contEndX);
 				cookieStartY = getRandom(contStartY, contEndY);
 			}
-			console.log("Cookie position: ", cookieStartY, cookieStartX)
+			console.log("Cookie position xy: ", cookieStartX, cookieStartY)
 			cookie.src = "images/cookie.png";
 			cookie.setAttribute("class", "smallEntity cookie");
 			container.appendChild(cookie);
@@ -197,7 +201,7 @@
 			return cookie;
 		}
 
-		function spawnPlayer() {
+		function spawnPlayer(playerJSON) {
 			var
 			  player = document.createElement("img")
 			, spawnPlaces = [
@@ -219,8 +223,8 @@
 			container.appendChild(player);
 
 			/* safe spawn data to json */
-			playerData.location = getPositionData(player);
-			playerData.direction = direction;
+			playerJSON.location = getPositionData(player);
+			playerJSON.direction = direction;
 
 			player.style.left = left;
 			player.style.top = top;
