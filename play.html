@@ -115,20 +115,20 @@
 			;	
 			if (e.keyCode === 37) {
 				player.src = "images/left.gif";
-				elementToPosition(player, b, 0);
 				playerData.direction = "left"; 
+				elementToPosition(player, b, 0);
 			} else if(e.keyCode === 39) {
 				player.src = "images/right.gif";
-				elementToPosition(player, a, 0);
 				playerData.direction = "right";
+				elementToPosition(player, a, 0);
 			} else if(e.keyCode === 38) {
 				player.src ="images/top.gif";
-				elementToPosition(player, 0, b);
 				playerData.direction = "top";
+				elementToPosition(player, 0, b);
 			} else if(e.keyCode === 40) {
 				player.src = "images/bottom.gif";
-				elementToPosition(player, 0, a);
 				playerData.direction = "bottom";
+				elementToPosition(player, 0, a);
 			}
 		}
 
@@ -143,10 +143,18 @@
 			;
 			if (isInField(el, xAdd, yAdd) === true) {
 				/* currentx + x = new x */
-				el.style.left = (left + xAdd) + "px";
+				left += xAdd;
+				el.style.left = left + "px";
+				if (el === player) {
+					playerData.location.left = left; 
+				}
 			}
 			if (isInField(el, xAdd, yAdd) === true) {
-				el.style.top = (top + yAdd) + "px";
+				top += yAdd;
+				el.style.top = top + "px";
+				if (el === player) {
+					playerData.location.top = top;
+				}
 			}
 		}
 
@@ -225,6 +233,7 @@
 			
 			player.src = "images/" + direction + ".gif";
 			player.setAttribute("class", "entity player");
+			player.setAttribute("name", playerJSON.name);
 			container.appendChild(player);
 
 			/* safe spawn data to json */
@@ -238,13 +247,16 @@
 		}
 
 		function sendAndReceiveData(data) {
+			var 
+			  xmlHttp = new XMLHttpRequest()
+			;
+			xmlHttp
+		}
+
+		function processData(data) {
 
 		}
 
-		/**
-		 * x & y optionale werte 
-		 * werden derzeitiem wert hinzuaddiert
-		 */
 		function isInField(el, xAdd, yAdd, x, y) {
 			var
 			  left = x || getCurrXY(el, "left")
