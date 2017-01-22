@@ -1,0 +1,14 @@
+{
+	"spieler2" : {
+		"name" : "spieler2",
+		"location" : {
+			"top" : 182, 
+			"left" : 187,
+			"right" : 768,
+			"bottom" : 101,
+			"width" : 40,
+			"height" : 40
+		},
+		"direction" : "right" 
+	}
+}

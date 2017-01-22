@@ -69,11 +69,13 @@
 		const m = 40;
 		const cookieM = 20;
 		var
-		  playerData = {
+		  URL = "http://localhost:2509/"
+		, playerData = {
 		  	name : JSON.parse(localStorage.getItem("playerName")) || undefined
 		  , location : {} 
 		  , direction : ""
 		  }
+		, remotePlayers = {}
 		, container = document.getElementById("container")
 		, vw = getViewport(window)
 		, width = parseInt(vw[0] / 40) * 40 - 200
@@ -101,7 +103,7 @@
 		, player = spawnPlayer(playerData)
 		;
 
-		//connectionTimer(20);
+		connectionTimer(10000);
 
 		(function() {
 			window.addEventListener("keydown", movePlayer);
@@ -137,6 +139,7 @@
 		}
 
 		function elementToPosition(el, xAdd, yAdd) {
+			console.log(playerData)
 			var
 			  left = getCurrXY(el, "left")
 			, top = getCurrXY(el, "top")
@@ -164,7 +167,7 @@
 			, obj = {}
 			;
 			arr.forEach(function(e) {
-				obj[e] = el.getBoundingClientRect()[e];
+				obj[e] = parseInt(el.getBoundingClientRect()[e]);
 			})
 
 			obj["width"] = el.offsetWidth;
@@ -233,9 +236,10 @@
 			
 			player.src = "images/" + direction + ".gif";
 			player.setAttribute("class", "entity player");
-			player.setAttribute("name", playerJSON.name);
+			player.setAttribute("id", playerJSON.name);
 			container.appendChild(player);
-
+			//"jogi" : {}
+			remotePlayers[playerJSON.name] = playerJSON;
 			/* safe spawn data to json */
 			playerJSON.location = getPositionData(player);
 			playerJSON.direction = direction;
@@ -250,11 +254,44 @@
 			var 
 			  xmlHttp = new XMLHttpRequest()
 			;
-			xmlHttp
+			xmlHttp.open("POST", URL);
+			xmlHttp.setRequestHeader("Content-Type", "application/json");
+			xmlHttp.send(JSON.stringify(data));
+
+			xmlHttp.onreadystatechange = function() {
+				if (xmlHttp.readyState === 4) {
+					console.log("receiving response :");
+					processData(JSON.parse(xmlHttp.responseText));
+				}
+			}
 		}
-
+		/*
+		remotePlayers = {
+			"jogi" : {
+				name : "jogi"
+			, location : {}
+			, direction : ""
+			}
+		*/
 		function processData(data) {
-
+			console.log(data);
+			for (playerName in data) {
+				if (typeof remotePlayers[playerName] === 'undefined') {
+					spawnPlayer(data[playerName]);
+				} else {
+					// falls spieler existiert
+					// playerObj ist frisch - currDataPlayer ist alt
+					var
+					  playerObj = data[playerName]
+					, playerNode = document.getElementById(playerObj.name)
+					, currDataPlayer = remotePlayers[playerName]
+					, xAdd = currDataPlayer.location.left - playerObj.location.left
+					, yAdd = currDataPlayer.location.top - playerObj.location.top
+					;
+					elementToPosition(playerNode, xAdd, yAdd);
+					remotePlayers[playerObj.name] = playerObj;
+				}
+			}
 		}
 
 		function isInField(el, xAdd, yAdd, x, y) {
@@ -313,7 +350,12 @@
 			var
 				interval = setInterval(function() {
 					console.log("..");
-					sendAndReceiveData(playerData);
+					try {
+						sendAndReceiveData(playerData);					
+					} catch(e) {
+						console.log(e)
+						clearInterval(interval);
+					}
 				}, time);
 			;
 		}
