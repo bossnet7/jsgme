@@ -35,6 +35,8 @@
 			-webkit-animation: start 6s 1;
 			animation: start 3s 1;
 		}
+		h1 > span {
+		}
 		@keyframes start {
 			0% {transform: rotate(0deg);top:-1500px;}
 			20% {transform: rotate(14deg);}
@@ -47,17 +49,24 @@
 			100% {transform: rotate(0);top:178px;}
 		}
 		@keyframes lightning {
-			50% {opacity:0.5;}
+			25% {background:#878787;}
+			50% {background:#fff;}
+			75% {background:#878787;}
+		}
+		@keyframes lightningFont {
+			25% {color:#fff;}
+			50% {color:#9B9B9B;}
+			75% {color:#fff;}
 		}
 	</style>
 </head>
 <body>
 	<header>
-		<h1>Jogis Trollgame</h1>
+		<h1><span>Jogis Trollgame</span></h1>
 	</header>
 	<div id="main">
 		<form action="play.html">
-			<input id="name" style="" placeholder="choose a name.." name="nickname"></input>
+			<input id="name" style="" placeholder="choose a name.." value="" name="nickname"></input>
 		</form>
 	</div>
 </body>
